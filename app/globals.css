@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+@font-face {
+    font-family: "valorant";
+    src: url("/Tungsten-Bold_Web.woff2") 
+}
