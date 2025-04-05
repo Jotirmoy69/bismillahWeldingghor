@@ -4,7 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import React from "react";
 import { useRouter } from 'next/navigation'
 
-const page = () => {
+export default function Page() {
     const router = useRouter()
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -75,4 +75,3 @@ const page = () => {
   );
 };
 
-export default page;
