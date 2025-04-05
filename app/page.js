@@ -176,8 +176,8 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* cards section
-      <h1 className="font-[valorant] md:text-9xl text-7xl text-center pt-10">MEMBERS</h1> */}
+      
+      <h1 className="font-[valorant] md:text-6xl text-7xl text-end pt-10 px-20">MEMBERS</h1> 
         <div className="card-container w-full h-full md:p-16 p-5 flex gap-10 flex-row flex-wrap font-[valorant] ">
           {/* card */}
           {members.map((item, index) => (

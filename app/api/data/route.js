@@ -3,26 +3,25 @@
 import { MongoClient } from "mongodb";
 import { NextResponse } from "next/server";
 
-export async function POST(request) {
+export async function GET(request) {
   const uri = process.env.MONGODB_URI;
 
-
-  const { username, password } = await request.json();
 
   const client = new MongoClient(uri);
 
   try {
     await client.connect();
     const database = client.db("employee");
-    const collection = database.collection("admin");
+    const collection = database.collection("employee");
 
-    const user = await collection.findOne({ username, password });
+    const user = await collection.find({}).toArray();
 
-    if (!user) {
-      return NextResponse.json({ message: "Invalid Username or Password" }, { status: 401 });
-    }
+   
 
-    return NextResponse.json({ message: "Login successful", user: { username: user.username } }, { status: 200 });
+    return NextResponse.json({
+      message: "Data fetched successfully",
+      data: user
+    });
 
   } catch (error) {
     console.error("Login Error:", error);

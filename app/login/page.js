@@ -1,36 +1,42 @@
 "use client";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from 'next/navigation'
 
 export default function Page() {
-    const router = useRouter()
-    const handleSubmit = async (e) => {
-      e.preventDefault();
+  const router = useRouter()
+  const [loading, setLoading] = useState(false);  // Track loading state
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     
-      const username = e.target.username.value;
-      const password = e.target.password.value;
+    setLoading(true);  // Set loading to true when the form is submitted
     
-      try {
-        const res = await axios.post(
-          "/api/mongodb",
-          { username, password },
-          { headers: { "Content-Type": "application/json" } }
-        );
-    
-        toast.success(res.data.message); // ✅ Fix 1
-    
-        if (res.status === 200) { // ✅ Fix 2
-          router.push("/dashboard");
-        }
-    
-      } catch (error) {
-        console.error("Login Error:", error.response?.data || error.message);
-        toast.error(error.response?.data?.message || "Failed to submit data");
+    const username = e.target.username.value;
+    const password = e.target.password.value;
+
+    try {
+      const res = await axios.post(
+        "/api/mongodb",
+        { username, password },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      toast.success(res.data.message); // ✅ Fix 1
+
+      if (res.status === 200) { // ✅ Fix 2
+        localStorage.setItem('loggedIn', 'true')
+        router.push("/dashboard");
       }
-    };
-    
+
+    } catch (error) {
+      console.error("Login Error:", error.response?.data || error.message);
+      toast.error(error.response?.data?.message || "Failed to submit data");
+    } finally {
+      setLoading(false);  // Set loading to false when the request finishes
+    }
+  };
 
   return (
     <section className="login h-screen">
@@ -54,7 +60,7 @@ export default function Page() {
         <div className="mb-5">
           <label
             htmlFor="password"
-            className="block mb-2 text-xl font-medium text-gray-900  font-[valorant]"
+            className="block mb-2 text-xl font-medium text-gray-900 font-[valorant]"
           >
             Your password
           </label>
@@ -68,15 +74,22 @@ export default function Page() {
           />
         </div>
 
+        {/* Show loader when submitting */}
         <button
           type="submit"
-          className="text-black hover:bg-sky-300 transition-all duration-200 bg-[#C5F1FF] font-[valorant] focus:ring-4 focus:outline-none  font-medium rounded-lg text-xl w-full px-5 py-2.5 text-center "
+          className={`text-black hover:bg-sky-300 transition-all duration-200 bg-[#C5F1FF] font-[valorant] focus:ring-4 focus:outline-none  font-medium rounded-lg text-xl w-full px-5 py-2.5 text-center ${loading ? 'cursor-not-allowed opacity-50' : ''}`}
+          disabled={loading}  // Disable the button while loading
         >
-          Submit
+          {loading ? (
+            <div className="flex justify-center">
+              <div className="w-6 h-6 border-4 border-t-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div> {/* Loader */}
+            </div>
+          ) : (
+            'Submit'
+          )}
         </button>
       </form>
       <ToastContainer />
     </section>
   );
-};
-
+}
