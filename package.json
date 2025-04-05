@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "axios": "^1.8.4",
     "gsap": "^3.12.7",
     "locomotive-scroll": "^4.1.4",
+    "mongodb": "6.15",
     "motion": "^12.6.3",
     "next": "15.2.4",
     "react": "^19.0.0",

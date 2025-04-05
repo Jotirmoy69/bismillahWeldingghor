@@ -4,3 +4,8 @@
     font-family: "valorant";
     src: url("/Tungsten-Bold_Web.woff2") 
 }
+
+
+.login{
+    height: calc(100vh - 64px - 64px);
+}
