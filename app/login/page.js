@@ -13,19 +13,12 @@ export default function Page() {
     const password = e.target.password.value;
 
     try {
-      const res = await fetch("/api/mongodb", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ username, password })
-      });
-      
-    
+      const res = await axios.post("/api/mongodb",{ username, password },{ headers: { "Content-Type": "application/json" } } // Add headers in the config object
+      );
 
       toast.success(res.message); 
 
-       if(res.status === 200){
+       if(res.data.status === 200){
         router.push("/dashboard");
        }
     } catch (error) {
