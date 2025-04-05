@@ -2,10 +2,10 @@
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import React from "react";
-import { useRouter } from "next/router";
+import { useRouter } from 'next/navigation'
 
 const page = () => {
-    const router = useRouter();
+    const router = useRouter()
   const handleSubmit = async (e) => {
     e.preventDefault();
 
