@@ -6,26 +6,31 @@ import { useRouter } from 'next/navigation'
 
 export default function Page() {
     const router = useRouter()
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const username = e.target.username.value;
-    const password = e.target.password.value;
-
-    try {
-      const res = await axios.post("/api/mongodb",{ username, password },{ headers: { "Content-Type": "application/json" } } // Add headers in the config object
-      );
-
-      toast.success(res.message); 
-
-       if(res.data.status === 200){
-        router.push("/dashboard");
-       }
-    } catch (error) {
-      console.error(error); // Log any errors
-      toast.error("Failed to submit data"); // Show error message
-    }
-  };
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+    
+      const username = e.target.username.value;
+      const password = e.target.password.value;
+    
+      try {
+        const res = await axios.post(
+          "/api/mongodb",
+          { username, password },
+          { headers: { "Content-Type": "application/json" } }
+        );
+    
+        toast.success(res.data.message); // ✅ Fix 1
+    
+        if (res.status === 200) { // ✅ Fix 2
+          router.push("/dashboard");
+        }
+    
+      } catch (error) {
+        console.error("Login Error:", error.response?.data || error.message);
+        toast.error(error.response?.data?.message || "Failed to submit data");
+      }
+    };
+    
 
   return (
     <section className="login h-screen">
