@@ -9,3 +9,7 @@
 .login{
     height: calc(100vh - 64px - 64px);
 }
+
+.dashboard{
+    min-height: calc(100vh - 64px - 64px);
+}

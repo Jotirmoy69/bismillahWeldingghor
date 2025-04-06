@@ -6,35 +6,14 @@ import { useEffect, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import axios from "axios";
 
 export default function Home() {
   gsap.registerPlugin(ScrollTrigger);
   gsap.registerPlugin(useGSAP);
   useGSAP(() => {
-    // gsap.from(".tagline h1", {
-    //   x: -50,
-    //   opacity: 0,
-    //   duration: 1,
-    //   stagger: 0.2,
-    // }),
 
-    // gsap.from(".top-right", {
-    //   opacity: 0,
-    //   duration: 2,
-    // });
-
-    // gsap.from(".card", {
-    //   x:-50,
-    //   opacity: 0,
-    //   duration: 2,
-    //   scrollTrigger: {
-    //     trigger: ".card-container",
-    //     start: "top 80%",
-    //     end: "bottom 20%",
-    //     markers: true,
-    //   },
-    // });
-
+    
 
     gsap.from(".tagline h1", {
       x: -50,
@@ -87,46 +66,20 @@ export default function Home() {
     "RAIYAN",
   ]);
 
-  const [members, setMembers] = useState([
-    {
-      name: "RAGIB",
-      post: "FOUNDER",
-      description:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-      img: "/ragib2.svg",
-    },
-    {
-      name: "SADIK",
-      post: "HANDLING MASTER",
-      description:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-      img: "/sadik2.svg",
-    },
-    {
-      name: "MIFTAHUL",
-      post: "SUIPER",
-      description:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-      img: "/miftahul2.svg",
-    },
-    {
-      name: "TAHIAT",
-      post: "METHOR",
-      description:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-      img: "/tahiat2.svg",
-    },
-    {
-      name: "MUSFIK",
-      post: "WELDER",
-      description:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-      img: "/musfik2.svg",
-    },
-  ]);
+  const [members, setMembers] = useState([]);
 
   useEffect(() => {
-    // const locomotiveScroll = new LocomotiveScroll();
+    // Define the async function inside useEffect
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("/api/data");
+        setMembers(response.data.data); // Assuming response.data.data contains your members
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData(); // Call the async function
   }, []);
   return (
     <main>
