@@ -20,9 +20,12 @@ export default function Home() {
       opacity: 0,
       duration: 1,
       stagger: 0.2,
+      ease: "easeInOut",
     });
   
     gsap.from(".top-right", {
+      y:-50,
+      stagger: 0.2,
       opacity: 0,
       duration: 2,
     });
@@ -84,8 +87,8 @@ export default function Home() {
   return (
     <main>
       {/* hero section */}
-      <div className="w-full h-[100vh] bg-cover bg-[url('/bg2.svg')] md:px-20 md:py-20 px-10 flex md:flex-row flex-col">
-        <div className="tagline md:w-1/2 w-full  py-10">
+      <div className="w-full h-[100vh] bg-cover bg-[url('/bg2.svg')] md:px-20 md:py-20  flex md:flex-row flex-col">
+        <div className="tagline md:w-1/2 w-full md:p-0 pl-10 py-10">
           <h1 className="font-[valorant] lg:text-[7vw] md:text-6xl text-4xl">
             Forging Strength,
           </h1>
@@ -100,14 +103,36 @@ export default function Home() {
           </h1>
         </div>
 
-        <div className="md:w-1/2 w-full h-full py-10">
-          <Image
+        <div className="md:w-1/2 w-full h-full flex gap-2 md:gap-5 md:mt-7 mt-0 justify-center ">
+        <Image 
+        src={"/ragib.png"}
+        alt="pic"
+        height={15}
+        width={150}
+        className="rounded-2xl object-cover h-60 md:h-96 w-24 md:w-36 mt-[5vh] top-right"
+        />
+        <Image 
+        src={"/miftahul.png"}
+        alt="pic"
+        height={15}
+        width={150}
+        className="rounded-2xl object-cover h-60 md:h-96 w-24 md:w-36 top-right"
+        />
+        <Image 
+        src={"/sadik.png"}
+        alt="pic"
+        height={15}
+        width={150}
+        className="rounded-2xl object-cover h-60 md:h-96 w-24 md:w-36 mt-[-5vh] top-right"
+        />
+
+          {/* <Image
             src="/hero-right.png"
             alt="logo"
             width={650}
             height={650}
             className="mt-5 top-right"
-          />
+          /> */}
         </div>
       </div>
 
