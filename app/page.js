@@ -103,26 +103,20 @@ export default function Home() {
           </h1>
         </div>
 
-        <div className="md:w-1/2 w-full h-full flex gap-2 md:gap-5 md:mt-7 mt-0 justify-center ">
-        <Image 
+        <div className="md:w-1/2 w-full h-full flex gap-2 md:gap-5 md:mt-7   mt-0 justify-center ">
+        <img 
         src={"/ragib.png"}
         alt="pic"
         height={15}
         width={150}
         className="rounded-2xl object-cover h-60 md:h-96 w-24 md:w-36 mt-[5vh] top-right"
         />
-        <Image 
+        <img 
         src={"/miftahul.png"}
-        alt="pic"
-        height={15}
-        width={150}
         className="rounded-2xl object-cover h-60 md:h-96 w-24 md:w-36 top-right"
         />
-        <Image 
+        <ImageData 
         src={"/sadik.png"}
-        alt="pic"
-        height={15}
-        width={150}
         className="rounded-2xl object-cover h-60 md:h-96 w-24 md:w-36 mt-[-5vh] top-right"
         />
 
