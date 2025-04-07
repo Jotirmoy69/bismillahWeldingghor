@@ -150,8 +150,9 @@ export default function Home() {
                   <Image
                     src={item.img}
                     alt="profilePic"
-                    width={230}
-                    height={230}
+                    className="rounded-full"
+                    width={200}
+                    height={200}
                   />
                 </div>
               </div>
