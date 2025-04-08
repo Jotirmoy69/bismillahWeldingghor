@@ -115,7 +115,7 @@ export default function Home() {
         src={"/miftahul.png"}
         className="rounded-2xl object-cover h-60 md:h-96 w-24 md:w-36 top-right"
         />
-        <ImageData 
+        <img 
         src={"/sadik.png"}
         className="rounded-2xl object-cover h-60 md:h-96 w-24 md:w-36 mt-[-5vh] top-right"
         />
