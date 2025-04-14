@@ -13,3 +13,12 @@
 .dashboard{
     min-height: calc(100vh - 64px - 64px);
 }
+
+body{
+    background-color: #F2EFE7;
+    overflow-x: hidden;
+}
+.main-cheese{
+    position: relative;
+    perspective: 2000px;
+}

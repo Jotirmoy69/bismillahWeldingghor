@@ -9,10 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@barba/core": "^2.10.3",
     "@gsap/react": "^2.1.2",
     "axios": "^1.8.4",
+    "framer-motion": "^12.6.5",
     "gsap": "^3.12.7",
-    "locomotive-scroll": "^4.1.4",
+    "locomotive-scroll": "^5.0.0-beta.21",
     "mongodb": "6.15",
     "motion": "^12.6.3",
     "next": "15.2.4",
