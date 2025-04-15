@@ -30,9 +30,7 @@ export default function RootLayout({ children }) {
         cz-shortcut-listen="false"
       >
         <Navbar />
-        <PageTransitionWrapper>
           {children}
-        </PageTransitionWrapper>
         <Footer />
       </body>
     </html>
