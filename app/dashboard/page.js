@@ -5,8 +5,7 @@ import { RxCross2 } from "react-icons/rx";
 import Image from "next/image";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 export default function Page() {
   const [name, setName] = useState("");
@@ -18,10 +17,10 @@ export default function Page() {
   const [dots, setDots] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
-  const [member, setmember] = useState();
-  const [isFetched, setisFetched] = useState(false);
+  const [isFetched, setIsFetched] = useState(false);
 
   const router = useRouter();
+
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("loggedIn") === "true";
     if (!isLoggedIn) {
@@ -30,43 +29,41 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    // Define the async function inside useEffect
-    setisFetched(false);
     const fetchData = async () => {
+      setIsFetched(false);
       try {
         const response = await axios.get("/api/data");
-        console.log(response.data.data);
-
-        setMembers(response.data.data); // Assuming response.data.data contains your members
+        setMembers(response.data.data);
       } catch (error) {
         console.error("Error fetching data:", error);
+        toast.error("Failed to fetch members.");
+      } finally {
+        setIsFetched(true);
       }
     };
 
-    fetchData(); // Call the async function
-    setisFetched(true);
-  }, [members]);
+    fetchData();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     const trimmedName = name.trim().toUpperCase();
-    
-    try {
-      // Check if the name already exists in the members array
-      if (members.some((member) => member.name.toUpperCase().trim() === trimmedName)) {
-        toast.error("Member already exists");
-        setIsSubmitting(false);
-        return;
-      }
-      
-      try {
-      if (!name || !post || !description || !image) {
-        alert("Please fill in all fields");
-        return;
-      }
 
+    if (!name || !post || !description || !image) {
+      toast.error("Please fill in all fields");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (members.some((member) => member.name === trimmedName)) {
+      toast.error("Member already exists");
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
       const formData = new FormData();
       formData.append("file", image);
       formData.append("upload_preset", "bismillah");
@@ -83,32 +80,29 @@ export default function Page() {
       const data = await res.json();
 
       const newMember = {
-        name: name.toUpperCase(),
+        name: trimmedName,
         post: post.toUpperCase(),
-        description: description,
-        img: data.url, // Make sure this matches your MongoDB schema (you used 'img' in frontend)
+        description,
+        img: data.url,
       };
 
       const response = await axios.post("/api/add", newMember, {
         headers: { "Content-Type": "application/json" },
       });
 
-      console.log(response.data);
-      setMembers([...members, newMember]); // Update UI immediately
-      setButton(false); // Close modal
+      setMembers((prev) => [...prev, response.data.newMember || newMember]);
+      setButton(false);
       setName("");
       setPost("");
       setDescription("");
       setImage(null);
-    } catch (error) {
-      console.error(error);
-    } finally {
       toast.success("Member added successfully");
+    } catch (error) {
+      console.error("Error adding member:", error);
+      toast.error("Failed to add member.");
+    } finally {
       setIsSubmitting(false);
     }
-  } catch (error) {
-      console.error("Error adding member:", error);
-    } 
   };
 
   const handleDelete = async (id) => {
@@ -117,22 +111,16 @@ export default function Page() {
       const response = await axios.post(
         "/api/delete",
         { _id: id },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
+        { headers: { "Content-Type": "application/json" } }
       );
-      console.log(response.data);
 
-      if (response.deleted) {
-        setMembers(members.filter((member) => member._id.toString() !== id));
-      } else {
-        console.warn("Delete operation did not return a valid deleted object.");
-      }
+      setMembers((prev) => prev.filter((member) => member._id !== id));
+      toast.success("Member deleted successfully");
     } catch (error) {
       console.error("Error deleting member:", error);
+      toast.error("Failed to delete member.");
     } finally {
       setDeletingId(null);
-      toast.success("Member deleted successfully");
     }
   };
 
@@ -140,75 +128,50 @@ export default function Page() {
     const interval = setInterval(() => {
       setDots((prev) => (prev.length < 3 ? prev + "." : ""));
     }, 500);
-
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <section>
+    <section className="min-h-screen pt-[64px] dashboard">
+      {/* Modal */}
       {button && (
-        <div className="min-h-screen z-99 fixed p-5 buttom-[50%]  w-full flex items-center justify-center inset-0 bg-transparent backdrop-blur-md ">
+        <div className="min-h-screen fixed inset-0 z-50 p-5 flex items-center justify-center bg-transparent backdrop-blur-md">
           <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full relative">
-            <div className="flex justify-end absolute top-5  right-5">
-              <button onClick={() => setButton(false)}>
-                <RxCross2 className="text-2xl cursor-pointer" />
-              </button>
-            </div>
-            <h2 className="text-4xl  text-center text-black font-[valorant] mb-6">
+            <button
+              onClick={() => setButton(false)}
+              className="absolute top-5 right-5"
+            >
+              <RxCross2 className="text-2xl cursor-pointer" />
+            </button>
+            <h2 className="text-4xl text-center text-black font-[valorant] mb-6">
               Add Member
             </h2>
             <form onSubmit={handleSubmit}>
-              {/* Name */}
-              <div className="mb-4">
-                <label
-                  htmlFor="name"
-                  className=" font-[valorant] block text-2xl font-medium text-gray-700 mb-2"
-                >
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#6E5AEF] focus:border-[#6E5AEF]"
-                  placeholder="Enter your name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </div>
-
-              {/* Post */}
-              <div className="mb-4">
-                <label
-                  htmlFor="post"
-                  className=" font-[valorant] block text-2xl font-medium text-gray-700 mb-2"
-                >
-                  Post Title
-                </label>
-                <input
-                  type="text"
-                  id="post"
-                  name="post"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#6E5AEF] focus:border-[#6E5AEF]"
-                  placeholder="Enter post title"
-                  value={post}
-                  onChange={(e) => setPost(e.target.value)}
-                  required
-                />
-              </div>
-
+              {/* Input Fields */}
+              {[
+                { label: "Name", state: name, setter: setName, type: "text" },
+                { label: "Post Title", state: post, setter: setPost, type: "text" },
+              ].map(({ label, state, setter, type }) => (
+                <div className="mb-4" key={label}>
+                  <label className="block text-2xl font-medium text-gray-700 font-[valorant] mb-2">
+                    {label}
+                  </label>
+                  <input
+                    type={type}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#6E5AEF] focus:border-[#6E5AEF]"
+                    placeholder={`Enter ${label.toLowerCase()}`}
+                    value={state}
+                    onChange={(e) => setter(e.target.value)}
+                    required
+                  />
+                </div>
+              ))}
               {/* Description */}
               <div className="mb-4">
-                <label
-                  htmlFor="description"
-                  className=" font-[valorant] block text-2xl font-medium text-gray-700 mb-2"
-                >
+                <label className="block text-2xl font-medium text-gray-700 font-[valorant] mb-2">
                   Description
                 </label>
                 <textarea
-                  id="description"
-                  name="description"
                   rows="4"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#6E5AEF] focus:border-[#6E5AEF]"
                   placeholder="Write a description"
@@ -217,31 +180,24 @@ export default function Page() {
                   required
                 />
               </div>
-
               {/* Image */}
               <div className="mb-4">
-                <label
-                  htmlFor="image"
-                  className=" font-[valorant] block text-2xl font-medium text-gray-700 mb-2"
-                >
+                <label className="block text-2xl font-medium text-gray-700 font-[valorant] mb-2">
                   Upload Image
                 </label>
                 <input
                   type="file"
-                  id="image"
-                  name="image"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#6E5AEF] focus:border-[#6E5AEF]"
                   accept="image/*"
                   onChange={(e) => setImage(e.target.files[0])}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#6E5AEF] focus:border-[#6E5AEF]"
                 />
               </div>
-
-              {/* Submit Button */}
+              {/* Submit */}
               <div className="flex justify-center mt-6">
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`bg-[#C5F1FF] font-[valorant] text-black text-2xl py-2 px-6 rounded-lg transition-colors w-full sm:w-auto ${
+                  className={`bg-[#C5F1FF] font-[valorant] text-black text-2xl py-2 px-6 rounded-lg w-full sm:w-auto transition-all duration-200 ${
                     isSubmitting
                       ? "opacity-60 cursor-not-allowed"
                       : "hover:bg-[#A9D9F9]"
@@ -280,100 +236,92 @@ export default function Page() {
           </div>
         </div>
       )}
-      <div className=" w-full dashboard py-5">
+
+      {/* Dashboard */}
+      <div className="w-full dashboard py-5">
         <div className="flex justify-between items-center px-10">
           <button
-            type="button"
             onClick={() => setButton(true)}
-            className=" font-[valorant] rounded-lg text-xl px-5 py-2.5 me-2 mb-2 bg-[#C5F1FF] hover:bg-[#ACD6FF] transition-all duration-200 cursor-pointer"
+            className="font-[valorant] rounded-lg text-xl px-5 py-2.5 bg-[#C5F1FF] hover:bg-[#ACD6FF] transition-all duration-200"
           >
             Add Member
           </button>
-          <h1 className="text-2xl font-[valorant] text-end">Dashboard</h1>
+          <h1 className="text-2xl font-[valorant]">Dashboard</h1>
         </div>
 
-        <div className="card-container w-full h-full  md:p-10 p-5 justify-center flex md:gap-10  gap-5 flex-wrap font-[valorant] ">
-          <h1
-            className={`md:text-4xl text-2xl ${isFetched ? "hidden" : "block"}`}
-          >
-            Fetching Data{" "}
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              {dots}
-            </motion.span>
-          </h1>
-          {/* card */}
-          {members.map((item, index) => (
-            <div
-              key={index}
-              className="card w-[85vh] relative h-96 bg-[#BBEEFF] rounded-xl"
-            >
-              <button
-                type="button"
-                onClick={() => handleDelete(item._id)}
-                disabled={deletingId === item._id}
-                className={`text-white absolute top-3 right-3 bg-gradient-to-r from-red-400 via-red-500 to-red-600 rounded-lg text-xl px-5 py-2 text-center transition-all duration-300 ${
-                  deletingId === item._id
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800"
-                }`}
+        <div className="card-container w-full h-full p-5 md:p-10 flex flex-wrap gap-5 justify-center font-[valorant]">
+          {/* Loading or Empty Message */}
+          {!isFetched ? (
+            <h1 className="text-2xl md:text-4xl">
+              Fetching Data
+              <motion.span animate={{ opacity: 1 }}>{dots}</motion.span>
+            </h1>
+          ) : members.length === 0 ? (
+            <h1 className="text-xl mt-10 text-center">No members found.</h1>
+          ) : (
+            members.map((item, index) => (
+              <div
+                key={index}
+                className="card w-[85vh] relative h-96 bg-[#BBEEFF] rounded-xl"
               >
-                {deletingId === item._id ? (
-                  <span className="flex items-center gap-2">
-                    <svg
-                      className="animate-spin h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v8z"
-                      ></path>
-                    </svg>
-                    Deleting...
-                  </span>
-                ) : (
-                  "Delete"
-                )}
-              </button>
-
-              <div className="h-4/6 bg-amber-20 w-full flex justify-center items-center">
-                <div className="w-1/2 h-full p-10">
-                  <h1 className="font-[valorant] md:text-8xl text-4xl">
-                    {item.name}
-                  </h1>
-                  <h2 className="font-[valorant] md:text-4xl text-2xl">
-                    {item.post}
-                  </h2>
+                <button
+                  onClick={() => handleDelete(item._id)}
+                  disabled={deletingId === item._id}
+                  className={`text-white absolute top-3 right-3 bg-gradient-to-r from-red-400 via-red-500 to-red-600 rounded-lg text-xl px-5 py-2 transition-all ${
+                    deletingId === item._id
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-gradient-to-br focus:ring-4"
+                  }`}
+                >
+                  {deletingId === item._id ? (
+                    <span className="flex items-center gap-2">
+                      <svg
+                        className="animate-spin h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v8z"
+                        ></path>
+                      </svg>
+                      Deleting...
+                    </span>
+                  ) : (
+                    "Delete"
+                  )}
+                </button>
+                <div className="h-4/6 flex">
+                  <div className="w-1/2 p-10">
+                    <h1 className="text-4xl md:text-8xl">{item.name}</h1>
+                    <h2 className="text-2xl md:text-4xl">{item.post}</h2>
+                  </div>
+                  <div className="w-1/2 flex items-center justify-center">
+                    <Image
+                      src={item.img}
+                      alt="profilePic"
+                      width={200}
+                      height={200}
+                      className="rounded-full"
+                    />
+                  </div>
                 </div>
-                <div className="w-1/2 h-full flex items-center justify-center rounded-full mr-5">
-                  <Image
-                    src={item.img}
-                    alt="profilePic"
-                    width={200}
-                    className="rounded-full"
-                    height={200}
-                  />
+                <div className="h-1/4 p-8 pt-0 text-xs sm:text-xl lg:text-2xl">
+                  <h4>{item.description}</h4>
                 </div>
               </div>
-              <div className="h-1/4 w-full flex p-8 pt-0 font-[valorant] text-xs sm:text-xl lg:text-2xl ">
-                <h4>{item.description}</h4>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
       <ToastContainer />

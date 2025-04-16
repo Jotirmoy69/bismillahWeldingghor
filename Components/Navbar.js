@@ -64,9 +64,9 @@ useEffect(() => {
 
   {/* Desktop Navigation */}
   <ul className="md:flex gap-5 font-[valorant] text-2xl hidden">
-    <Link href="/"><li>Home</li></Link>
-    <Link href="/services"><li>Services</li></Link>
-    <Link href="/"><li>Contact Us</li></Link>
+    <a href="/"><li>Home</li></a>
+    <a href="/services"><li>Services</li></a>
+    <a href="/"><li>Contact Us</li></a>
   </ul>
 
   {/* Pricing - shown separately only on desktop */}

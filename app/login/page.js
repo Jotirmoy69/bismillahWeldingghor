@@ -39,7 +39,7 @@ export default function Page() {
   };
 
   return (
-    <section className="login h-screen">
+    <section className="login h-screen mt-[64px]">
       <form className="max-w-sm mx-auto pt-30" onSubmit={handleSubmit}>
         <div className="mb-5">
           <label
